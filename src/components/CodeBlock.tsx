@@ -27,12 +27,27 @@ export default function CodeBlock({ code, language }: CodeBlockProps) {
     }
   }, [code, language]);
 
+  const lineCount = code.split('\n').length;
+
   return (
-    <pre className={styles.pre}>
-      <code
-        className={`hljs ${styles.code}`}
-        dangerouslySetInnerHTML={{ __html: highlighted }}
-      />
-    </pre>
+    <div className={styles.editor}>
+      <div className={styles.chrome}>
+        <span className={styles.lights} aria-hidden>
+          <span />
+          <span />
+          <span />
+        </span>
+        <span className={styles.language}>{language}</span>
+        <span className={styles.lines}>
+          {lineCount} line{lineCount === 1 ? '' : 's'}
+        </span>
+      </div>
+      <pre className={styles.pre}>
+        <code
+          className={`hljs ${styles.code}`}
+          dangerouslySetInnerHTML={{ __html: highlighted }}
+        />
+      </pre>
+    </div>
   );
 }

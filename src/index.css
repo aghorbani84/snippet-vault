@@ -1,15 +1,48 @@
 :root {
   --bg: #f8f7f4;
+  --canvas: #f4f3f1;
   --surface: #ffffff;
+  --sidebar-bg: #f6f5f3;
   --text: #1a1a2e;
+  --text-strong: #111122;
   --muted: #6b7280;
+  --muted-strong: #4b5563;
   --border: #e5e2da;
+  --line: #e8e6e1;
+  --line-faint: #efece7;
   --accent: #6d28d9;
+  --accent-strong: #5b21b6;
   --accent-soft: #ede9fe;
+  --accent-soft-hover: #e2dbfd;
+  --nav-active: #e9e7e4;
+  --star: #f5b301;
+  --star-soft: #fef3c7;
+  --danger: #dc2626;
+  --danger-soft: #fef2f2;
+  --code-bg: #0d1117;
+  --shadow-window: 0 1px 2px rgba(16, 16, 32, 0.06), 0 12px 32px -8px rgba(16, 16, 32, 0.18);
+  --shadow-lift: 0 8px 24px -6px rgba(16, 16, 32, 0.28);
+
+  /* φ spacing scale (5 · 8 · 13 · 21 · 34) */
+  --s1: 5px;
+  --s2: 8px;
+  --s3: 13px;
+  --s4: 21px;
+  --s5: 34px;
+
+  /* φ type scale: 11 · 13 · 21 */
+  --fs-sm: 11px;
+  --fs-ui: 13px;
+  --fs-title: 21px;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.5;
   color: var(--text);
-  background: var(--bg);
+  background: var(--canvas);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -18,12 +51,27 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #12121a;
+    --canvas: #0f0f16;
     --surface: #1c1c28;
+    --sidebar-bg: #17171f;
     --text: #f3f4f6;
+    --text-strong: #ffffff;
     --muted: #9ca3af;
+    --muted-strong: #c3c8d1;
     --border: #33334a;
+    --line: #2c2c3e;
+    --line-faint: #262633;
     --accent: #a78bfa;
+    --accent-strong: #c4b5fd;
     --accent-soft: #2e2a4d;
+    --accent-soft-hover: #37325c;
+    --nav-active: #2a2a3a;
+    --star: #fbbf24;
+    --star-soft: #3a2f10;
+    --danger: #f87171;
+    --danger-soft: #3a1d1d;
+    --shadow-window: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px -8px rgba(0, 0, 0, 0.55);
+    --shadow-lift: 0 8px 24px -6px rgba(0, 0, 0, 0.6);
   }
 }
 
@@ -39,4 +87,10 @@ body {
 
 button {
   font-family: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }

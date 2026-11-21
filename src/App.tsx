@@ -1,9 +1,22 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  CheckCircle2,
+  Code2,
+  Download,
+  Plus,
+  RotateCcw,
+  Search,
+  SearchX,
+  Star,
+  Upload,
+} from 'lucide-react';
 import type { Language, Snippet } from './types';
 import { LANGUAGES, createSnippet } from './types';
 import { SEED_SNIPPETS } from './data/seed';
 import { filterSnippets } from './lib/filter';
-import SnippetCard from './components/SnippetCard';
+import { LANGUAGE_COLORS } from './lib/languageColors';
+import SnippetRow from './components/SnippetRow';
+import SnippetDetail from './components/SnippetDetail';
 import SnippetForm, { type SnippetFormValues } from './components/SnippetForm';
 import styles from './App.module.css';
 
@@ -37,6 +50,7 @@ export default function App() {
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Snippet | null>(null);
   const [notice, setNotice] = useState('');
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -51,6 +65,24 @@ export default function App() {
   const favoriteCount = useMemo(
     () => snippets.filter((s) => s.favorite).length,
     [snippets],
+  );
+
+  const languageCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const s of snippets) {
+      counts.set(s.language, (counts.get(s.language) ?? 0) + 1);
+    }
+    return counts;
+  }, [snippets]);
+
+  // The detail pane follows the first visible snippet unless the user
+  // picked one that is still visible.
+  const selectedSnippet = useMemo(
+    () =>
+      visibleSnippets.find((s) => s.id === selectedId) ??
+      visibleSnippets[0] ??
+      null,
+    [visibleSnippets, selectedId],
   );
 
   const flash = (message: string) => {
@@ -80,6 +112,7 @@ export default function App() {
     } else {
       const snippet = createSnippet({ ...values, tags });
       setSnippets((prev) => [snippet, ...prev]);
+      setSelectedId(snippet.id);
       flash(`Added "${values.title}".`);
     }
     setEditing(null);
@@ -158,141 +191,175 @@ export default function App() {
     flash('Restored the built-in example snippets.');
   };
 
+  const clearFilters = () => {
+    setQuery('');
+    setLanguage('All');
+    setFavoritesOnly(false);
+  };
+
   return (
-    <div className={styles.page}>
-      <header className={styles.header}>
-        <div>
-          <h1 className={styles.title}>Snippet Vault</h1>
-          <p className={styles.subtitle}>
-            Save, search and reuse the code you keep coming back to.
-          </p>
-        </div>
-        <div className={styles.stats}>
-          <span>
-            <strong>{snippets.length}</strong> snippets
-          </span>
-          <span>
-            <strong>{favoriteCount}</strong> favorites
-          </span>
-        </div>
+    <div className={styles.window}>
+      <header className={styles.chrome}>
+        <span className={styles.lights} aria-hidden>
+          <span />
+          <span />
+          <span />
+        </span>
+        <h1 className={styles.windowTitle}>Snippet Vault</h1>
+        <span className={styles.chromeStats}>
+          <strong>{snippets.length}</strong> snippets ·{' '}
+          <strong>{favoriteCount}</strong> favorites
+        </span>
       </header>
 
-      <section className={styles.toolbar} aria-label="Snippet controls">
-        <input
-          type="search"
-          className={styles.search}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search title, code, description or tags…"
-          aria-label="Search snippets"
-        />
-        <select
-          className={styles.select}
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-          aria-label="Filter by language"
-        >
-          <option value="All">All languages</option>
-          {LANGUAGES.map((lang) => (
-            <option key={lang} value={lang}>
-              {lang}
-            </option>
-          ))}
-        </select>
-        <button
-          type="button"
-          className={`${styles.toggle} ${favoritesOnly ? styles.toggleActive : ''}`}
-          onClick={() => setFavoritesOnly((v) => !v)}
-          aria-pressed={favoritesOnly}
-        >
-          ★ Favorites
-        </button>
-        <button
-          type="button"
-          className={styles.primary}
-          onClick={() => {
-            setEditing(null);
-            setFormOpen(true);
-          }}
-        >
-          + New snippet
-        </button>
-      </section>
-
-      <section className={styles.utilityBar} aria-label="Data tools">
-        <button type="button" className={styles.tool} onClick={handleExport}>
-          Export JSON
-        </button>
-        <button
-          type="button"
-          className={styles.tool}
-          onClick={() => fileInputRef.current?.click()}
-        >
-          Import JSON
-        </button>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="application/json,.json"
-          hidden
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file) handleImportFile(file);
-            e.target.value = '';
-          }}
-        />
-        <button type="button" className={styles.tool} onClick={resetToSeed}>
-          Restore examples
-        </button>
-        {notice && (
-          <span className={styles.notice} role="status">
-            {notice}
-          </span>
-        )}
-      </section>
-
-      {formOpen && (
-        <SnippetForm
-          initial={editing ?? undefined}
-          onSubmit={handleFormSubmit}
-          onCancel={() => {
-            setFormOpen(false);
-            setEditing(null);
-          }}
-        />
-      )}
-
-      <main>
-        {visibleSnippets.length === 0 ? (
-          <div className={styles.empty}>
-            <h2>No snippets match</h2>
-            <p>
-              Try a different search term, clear the language filter, or add
-              your first snippet.
-            </p>
+      <div className={styles.body}>
+        <aside className={styles.sidebar} aria-label="Library">
+          <nav className={styles.navSection} aria-label="Collections">
+            <p className={styles.navLabel}>Library</p>
             <button
               type="button"
-              className={styles.primary}
+              className={`${styles.navItem} ${language === 'All' && !favoritesOnly ? styles.navItemActive : ''}`}
               onClick={() => {
-                setQuery('');
                 setLanguage('All');
                 setFavoritesOnly(false);
               }}
             >
-              Clear filters
+              <Code2 size={16} strokeWidth={1.75} />
+              All snippets
+              <span className={styles.navItemCount}>{snippets.length}</span>
+            </button>
+            <button
+              type="button"
+              className={`${styles.navItem} ${favoritesOnly ? styles.navItemActive : ''}`}
+              onClick={() => setFavoritesOnly((v) => !v)}
+              aria-pressed={favoritesOnly}
+            >
+              <Star size={16} strokeWidth={1.75} />
+              Favorites
+              <span className={styles.navItemCount}>{favoriteCount}</span>
+            </button>
+          </nav>
+
+          <nav className={styles.navSection} aria-label="Filter by language">
+            <p className={styles.navLabel}>Languages</p>
+            {LANGUAGES.map((lang) => (
+              <button
+                key={lang}
+                type="button"
+                className={`${styles.navItem} ${language === lang && !favoritesOnly ? styles.navItemActive : ''}`}
+                onClick={() => {
+                  setLanguage(lang);
+                  setFavoritesOnly(false);
+                }}
+              >
+                <span
+                  className={styles.langDot}
+                  style={{ background: LANGUAGE_COLORS[lang] }}
+                  aria-hidden
+                />
+                {lang}
+                <span className={styles.navItemCount}>
+                  {languageCounts.get(lang) ?? 0}
+                </span>
+              </button>
+            ))}
+          </nav>
+
+          <div className={styles.sidebarFoot}>
+            <button type="button" className={styles.toolItem} onClick={handleExport}>
+              <Download size={16} strokeWidth={1.75} />
+              Export JSON
+            </button>
+            <button
+              type="button"
+              className={styles.toolItem}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <Upload size={16} strokeWidth={1.75} />
+              Import JSON
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="application/json,.json"
+              hidden
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleImportFile(file);
+                e.target.value = '';
+              }}
+            />
+            <button type="button" className={styles.toolItem} onClick={resetToSeed}>
+              <RotateCcw size={16} strokeWidth={1.75} />
+              Restore examples
+            </button>
+            <p className={styles.storageNote}>
+              Snippets are stored only in your browser (localStorage). Export
+              JSON to back them up.
+            </p>
+          </div>
+        </aside>
+
+        <section className={styles.list} aria-label="Snippets">
+          <div className={styles.listToolbar}>
+            <div className={styles.searchWrap}>
+              <Search size={15} strokeWidth={1.75} />
+              <input
+                type="search"
+                className={styles.search}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search title, code, description or tags…"
+                aria-label="Search snippets"
+              />
+            </div>
+            <button
+              type="button"
+              className={styles.primary}
+              onClick={() => {
+                setEditing(null);
+                setFormOpen(true);
+              }}
+            >
+              <Plus size={15} strokeWidth={2} />
+              New snippet
             </button>
           </div>
-        ) : (
-          <p className={styles.resultCount}>
-            Showing {visibleSnippets.length} of {snippets.length} snippet(s)
-          </p>
-        )}
 
-        <div className={styles.grid}>
-          {visibleSnippets.map((snippet) => (
-            <SnippetCard
-              key={snippet.id}
-              snippet={snippet}
+          <p className={styles.resultCount}>
+            {visibleSnippets.length === 0
+              ? 'No snippets match'
+              : `Showing ${visibleSnippets.length} of ${snippets.length} snippet${snippets.length === 1 ? '' : 's'}`}
+          </p>
+
+          <div className={styles.rows}>
+            {visibleSnippets.map((snippet) => (
+              <SnippetRow
+                key={snippet.id}
+                snippet={snippet}
+                selected={selectedSnippet?.id === snippet.id}
+                onSelect={setSelectedId}
+                onToggleFavorite={handleToggleFavorite}
+              />
+            ))}
+          </div>
+        </section>
+
+        <main className={styles.detail}>
+          {formOpen ? (
+            <div className={styles.detailScroll}>
+              <SnippetForm
+                initial={editing ?? undefined}
+                onSubmit={handleFormSubmit}
+                onCancel={() => {
+                  setFormOpen(false);
+                  setEditing(null);
+                }}
+              />
+            </div>
+          ) : selectedSnippet ? (
+            <SnippetDetail
+              snippet={selectedSnippet}
               onEdit={(s) => {
                 setEditing(s);
                 setFormOpen(true);
@@ -301,14 +368,32 @@ export default function App() {
               onToggleFavorite={handleToggleFavorite}
               onTagClick={(tag) => setQuery(tag)}
             />
-          ))}
-        </div>
-      </main>
+          ) : (
+            <div className={styles.empty}>
+              <SearchX size={34} strokeWidth={1.5} />
+              <h2>No snippets match</h2>
+              <p>
+                Try a different search term, clear the language filter, or add
+                your first snippet.
+              </p>
+              <button
+                type="button"
+                className={styles.primary}
+                onClick={clearFilters}
+              >
+                Clear filters
+              </button>
+            </div>
+          )}
+        </main>
+      </div>
 
-      <footer className={styles.footer}>
-        Snippets are stored only in your browser (localStorage). Export JSON
-        to back them up.
-      </footer>
+      {notice && (
+        <span className={styles.notice} role="status">
+          <CheckCircle2 size={16} strokeWidth={2} />
+          {notice}
+        </span>
+      )}
     </div>
   );
 }
