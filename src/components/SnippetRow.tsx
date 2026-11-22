@@ -16,6 +16,8 @@ export default function SnippetRow({
   onSelect,
   onToggleFavorite,
 }: SnippetRowProps) {
+  // Real line count: number of newline-separated lines in the code.
+  const lineCount = snippet.code.split('\n').length;
   return (
     <div
       className={`${styles.row} ${selected ? styles.selected : ''}`}
@@ -38,13 +40,22 @@ export default function SnippetRow({
       <span className={styles.text}>
         <span className={styles.title}>{snippet.title}</span>
         <span className={styles.subtitle}>
-          {snippet.language} ·{' '}
+          {snippet.language} · {lineCount} line{lineCount === 1 ? '' : 's'} ·{' '}
           {new Date(snippet.updatedAt).toLocaleDateString(undefined, {
             month: 'short',
             day: 'numeric',
             year: 'numeric',
           })}
         </span>
+        {snippet.tags.length > 0 && (
+          <span className={styles.tags}>
+            {snippet.tags.slice(0, 3).map((tag) => (
+              <span key={tag} className={styles.tag}>
+                {tag}
+              </span>
+            ))}
+          </span>
+        )}
       </span>
       <button
         type="button"

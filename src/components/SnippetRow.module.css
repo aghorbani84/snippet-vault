@@ -56,6 +56,23 @@
   text-overflow: ellipsis;
 }
 
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.tag {
+  font-size: 11px;
+  line-height: 1.4;
+  padding: 1px 6px;
+  border: 1px solid var(--line-faint);
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  color: var(--muted-strong);
+  white-space: nowrap;
+}
+
 .star {
   flex: none;
   display: grid;
@@ -85,4 +102,17 @@
 
 .starred {
   color: var(--star);
+}
+
+/* Touch: no hover, so the favorite star must always be visible and tappable. */
+@media (max-width: 900px) {
+  .star {
+    opacity: 1;
+    width: 44px;
+    height: 44px;
+  }
+
+  .row {
+    padding: 10px;
+  }
 }

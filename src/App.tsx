@@ -71,18 +71,42 @@ export default function App() {
     [snippets, query, language, favoritesOnly],
   );
 
-  const favoriteCount = useMemo(
-    () => snippets.filter((s) => s.favorite).length,
-    [snippets],
-  );
-
-  const languageCounts = useMemo(() => {
-    const counts = new Map<string, number>();
+  // One memoized stats object drives the language index bar, the proof
+  // strip, the datasheet title and the totals row. Line counts count real
+  // newlines in each snippet's code — no invented numbers.
+  const stats = useMemo(() => {
+    const perLanguage = new Map<string, number>();
+    let totalLines = 0;
+    let favorites = 0;
     for (const s of snippets) {
-      counts.set(s.language, (counts.get(s.language) ?? 0) + 1);
+      perLanguage.set(s.language, (perLanguage.get(s.language) ?? 0) + 1);
+      totalLines += s.code.split('\n').length;
+      if (s.favorite) favorites += 1;
     }
-    return counts;
+    return {
+      total: snippets.length,
+      languages: perLanguage.size,
+      totalLines,
+      favorites,
+      perLanguage,
+    };
   }, [snippets]);
+
+  const visibleStats = useMemo(() => {
+    let lines = 0;
+    let favorites = 0;
+    for (const s of visibleSnippets) {
+      lines += s.code.split('\n').length;
+      if (s.favorite) favorites += 1;
+    }
+    return { lines, favorites };
+  }, [visibleSnippets]);
+
+  const datasheetTitle = `Snippet Vault v2 — ${stats.total} snippets · ${stats.languages} languages · ${stats.totalLines} lines`;
+
+  useEffect(() => {
+    document.title = datasheetTitle;
+  }, [datasheetTitle]);
 
   // The detail pane follows the first visible snippet unless the user
   // picked one that is still visible.
@@ -240,16 +264,14 @@ export default function App() {
             />
           </svg>
         )}
-        <h1 className={styles.windowTitle}>Snippet Vault</h1>
+        <h1 className={styles.windowTitle} title={datasheetTitle}>
+          {datasheetTitle}
+        </h1>
         <ThemeSwitcher
           theme={theme}
           onStyleChange={setStyle}
           onToggleMode={toggleMode}
         />
-        <span className={styles.chromeStats}>
-          <strong>{snippets.length}</strong> snippets ·{' '}
-          <strong>{favoriteCount}</strong> favorites
-        </span>
       </header>
       {theme.style === 'achaemenid' && (
         <div className={styles.doubleRule} aria-hidden />
@@ -279,7 +301,7 @@ export default function App() {
             >
               <Star size={16} strokeWidth={1.75} />
               Favorites
-              <span className={styles.navItemCount}>{favoriteCount}</span>
+              <span className={styles.navItemCount}>{stats.favorites}</span>
             </button>
           </nav>
 
@@ -302,7 +324,7 @@ export default function App() {
                 />
                 {lang}
                 <span className={styles.navItemCount}>
-                  {languageCounts.get(lang) ?? 0}
+                  {stats.perLanguage.get(lang) ?? 0}
                 </span>
               </button>
             ))}
@@ -369,6 +391,55 @@ export default function App() {
             </button>
           </div>
 
+          <div
+            className={styles.indexBar}
+            aria-label="Language index — click to filter"
+          >
+            <button
+              type="button"
+              className={`${styles.indexChip} ${language === 'All' && !favoritesOnly ? styles.indexChipActive : ''}`}
+              onClick={() => {
+                setLanguage('All');
+                setFavoritesOnly(false);
+              }}
+              aria-pressed={language === 'All' && !favoritesOnly}
+            >
+              All <span>{stats.total}</span>
+            </button>
+            {[...stats.perLanguage.entries()]
+              .sort((a, b) => b[1] - a[1])
+              .map(([lang, count]) => (
+                <button
+                  key={lang}
+                  type="button"
+                  className={`${styles.indexChip} ${language === lang && !favoritesOnly ? styles.indexChipActive : ''}`}
+                  onClick={() => {
+                    setLanguage(lang);
+                    setFavoritesOnly(false);
+                  }}
+                  aria-pressed={language === lang && !favoritesOnly}
+                >
+                  <span
+                    className={styles.indexDot}
+                    style={{
+                      background:
+                        LANGUAGE_COLORS[lang as keyof typeof LANGUAGE_COLORS],
+                    }}
+                    aria-hidden
+                  />
+                  {lang} <span>{count}</span>
+                </button>
+              ))}
+          </div>
+
+          <p className={styles.proofStrip} aria-label="Library totals">
+            <strong>{stats.total}</strong> snippets ·{' '}
+            <strong>{stats.languages}</strong> languages ·{' '}
+            <strong>{stats.totalLines}</strong> lines ·{' '}
+            <strong>{stats.favorites}</strong> favorite
+            {stats.favorites === 1 ? '' : 's'}
+          </p>
+
           <p className={styles.resultCount}>
             {visibleSnippets.length === 0
               ? 'No snippets match'
@@ -386,6 +457,14 @@ export default function App() {
               />
             ))}
           </div>
+
+          <p className={styles.totalsRow}>
+            In view: <strong>{visibleSnippets.length}</strong> snippet
+            {visibleSnippets.length === 1 ? '' : 's'} ·{' '}
+            <strong>{visibleStats.lines}</strong> lines ·{' '}
+            <strong>{visibleStats.favorites}</strong> favorite
+            {visibleStats.favorites === 1 ? '' : 's'}
+          </p>
         </section>
 
         <main className={styles.detail}>

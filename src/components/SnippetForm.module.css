@@ -70,6 +70,25 @@
   .row {
     grid-template-columns: 1fr;
   }
+
+  .field input,
+  .field select {
+    min-height: 44px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .primary,
+  .secondary {
+    width: 100%;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 18px;
+  }
 }
 
 .actions {

@@ -4,7 +4,8 @@
 
 .window {
   height: calc(100dvh - 34px);
-  margin: 17px;
+  max-width: 1680px;
+  margin: 17px auto;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
@@ -49,6 +50,9 @@
   left: 50%;
   transform: translateX(-50%);
   margin: 0;
+  max-width: calc(100% - 340px);
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-family: var(--font-display);
   font-size: var(--fs-ui);
   font-weight: 600;
@@ -77,13 +81,82 @@
   background: var(--surface);
 }
 
-.chromeStats {
+/* ---- Language index bar + proof strip (rank-1 density) ---- */
+
+.indexBar {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 var(--s3) var(--s2);
+}
+
+.indexChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font: inherit;
   font-size: 12px;
-  color: var(--muted);
+  color: var(--text);
+  cursor: pointer;
   white-space: nowrap;
 }
 
-.chromeStats strong {
+.indexChip:hover {
+  border-color: var(--accent);
+}
+
+.indexChip span:last-child {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.indexChipActive {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--text-strong);
+  font-weight: 600;
+}
+
+.indexDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.proofStrip {
+  flex: none;
+  margin: 0 var(--s3) var(--s2);
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.proofStrip strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.totalsRow {
+  flex: none;
+  margin: 0;
+  padding: var(--s2) var(--s3);
+  border-top: 1px solid var(--line-faint);
+  background: var(--surface);
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.totalsRow strong {
   color: var(--text);
   font-weight: 600;
 }
@@ -470,7 +543,65 @@
     min-height: 480px;
   }
 
-  .chromeStats {
+  .windowTitle {
+    max-width: calc(100% - 300px);
+    font-size: 12px;
+  }
+}
+
+/* ---- Phones (≤640px): 44px tap targets, header fits in one row ---- */
+
+@media (max-width: 640px) {
+  .window {
+    margin: 8px;
+  }
+
+  .chrome {
+    height: 52px;
+  }
+
+  /* Decorative traffic lights go; the title becomes a flex item so it
+     can never run under the switcher. */
+  .lights {
     display: none;
+  }
+
+  .windowTitle {
+    position: static;
+    transform: none;
+    flex: 1;
+    min-width: 0;
+    max-width: none;
+    text-align: center;
+  }
+
+  .navItem,
+  .toolItem {
+    min-height: 44px;
+    padding: 6px 10px;
+  }
+
+  /* Search gets its own row; New snippet stretches full width. */
+  .listToolbar {
+    flex-wrap: wrap;
+  }
+
+  .searchWrap {
+    flex: 1 1 100%;
+  }
+
+  .search {
+    height: 44px;
+  }
+
+  .primary {
+    flex: 1 1 auto;
+    justify-content: center;
+    height: 44px;
+  }
+
+  .indexChip {
+    min-height: 44px;
+    padding: 6px 12px;
   }
 }

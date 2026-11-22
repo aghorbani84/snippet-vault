@@ -201,3 +201,23 @@
   border-radius: var(--radius-md);
   background: var(--code-bg);
 }
+
+/* ---- Phones: 44px tap targets on every detail control ---- */
+
+@media (max-width: 640px) {
+  .star {
+    width: 44px;
+    height: 44px;
+  }
+
+  .button,
+  .copyButton {
+    min-height: 44px;
+    padding: 0 16px;
+  }
+
+  .tag {
+    min-height: 44px;
+    padding: 8px 12px;
+  }
+}
