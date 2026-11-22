@@ -1,27 +1,45 @@
+/* Snippet Vault — 4-way theme system (Achaemenid × Modern, each light × dark).
+   Palettes: tailwindshades MCP, Tailwind v4 oklch (see ~/workspace/design-mcp/theme-spec.md).
+   <html> carries data-style="achaemenid|modern" + data-mode="light|dark".
+   Components read semantic tokens only — never a hard-coded color. */
+
 :root {
-  --bg: #f8f7f4;
-  --canvas: #f4f3f1;
-  --surface: #ffffff;
-  --sidebar-bg: #f6f5f3;
-  --text: #1a1a2e;
-  --text-strong: #111122;
-  --muted: #6b7280;
-  --muted-strong: #4b5563;
-  --border: #e5e2da;
-  --line: #e8e6e1;
-  --line-faint: #efece7;
-  --accent: #6d28d9;
-  --accent-strong: #5b21b6;
-  --accent-soft: #ede9fe;
-  --accent-soft-hover: #e2dbfd;
-  --nav-active: #e9e7e4;
-  --star: #f5b301;
-  --star-soft: #fef3c7;
-  --danger: #dc2626;
-  --danger-soft: #fef2f2;
-  --code-bg: #0d1117;
-  --shadow-window: 0 1px 2px rgba(16, 16, 32, 0.06), 0 12px 32px -8px rgba(16, 16, 32, 0.18);
-  --shadow-lift: 0 8px 24px -6px rgba(16, 16, 32, 0.28);
+  /* Gold — input #B08D2E, sits at gold-600 */
+  --gold-50: oklch(98.7% 0.019 114.232);
+  --gold-100: oklch(96.9% 0.051 115.213);
+  --gold-200: oklch(93.8% 0.093 113.56);
+  --gold-300: oklch(89.4% 0.132 110.131);
+  --gold-400: oklch(83.7% 0.144 103.956);
+  --gold-500: oklch(77.7% 0.133 98.067);
+  --gold-600: oklch(65.9% 0.117 87.854);
+  --gold-700: oklch(53.8% 0.098 78.462);
+  --gold-800: oklch(46.5% 0.083 73.927);
+  --gold-900: oklch(41.6% 0.069 69.728);
+  --gold-950: oklch(28.6% 0.048 65.833);
+  /* Lapis — input #1D4E9E, sits at lapis-900 */
+  --lapis-50: oklch(97% 0.013 248.974);
+  --lapis-100: oklch(93.9% 0.031 249.955);
+  --lapis-200: oklch(89.5% 0.057 248.498);
+  --lapis-300: oklch(82.8% 0.1 245.596);
+  --lapis-400: oklch(73.3% 0.157 248.588);
+  --lapis-500: oklch(65.4% 0.203 253.792);
+  --lapis-600: oklch(58.6% 0.236 257.251);
+  --lapis-700: oklch(53.4% 0.234 258.746);
+  --lapis-800: oklch(47.7% 0.192 260.008);
+  --lapis-900: oklch(43.9% 0.141 259.892);
+  --lapis-950: oklch(28.2% 0.088 262.305);
+  /* Accent (Modern) — input #4F46E5, sits at accent-600 */
+  --accent-50: oklch(96.2% 0.016 272.314);
+  --accent-100: oklch(93% 0.03 272.788);
+  --accent-200: oklch(87% 0.057 274.039);
+  --accent-300: oklch(78.5% 0.101 274.713);
+  --accent-400: oklch(67.3% 0.16 276.935);
+  --accent-500: oklch(58.5% 0.205 277.117);
+  --accent-600: oklch(51.1% 0.23 276.966);
+  --accent-700: oklch(45.7% 0.211 277.023);
+  --accent-800: oklch(39.8% 0.171 277.366);
+  --accent-900: oklch(35.9% 0.126 278.697);
+  --accent-950: oklch(25.7% 0.079 281.288);
 
   /* φ spacing scale (5 · 8 · 13 · 21 · 34) */
   --s1: 5px;
@@ -35,11 +53,7 @@
   --fs-ui: 13px;
   --fs-title: 21px;
 
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-body);
   line-height: 1.5;
   color: var(--text);
   background: var(--canvas);
@@ -48,31 +62,199 @@
   -webkit-font-smoothing: antialiased;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #12121a;
-    --canvas: #0f0f16;
-    --surface: #1c1c28;
-    --sidebar-bg: #17171f;
-    --text: #f3f4f6;
-    --text-strong: #ffffff;
-    --muted: #9ca3af;
-    --muted-strong: #c3c8d1;
-    --border: #33334a;
-    --line: #2c2c3e;
-    --line-faint: #262633;
-    --accent: #a78bfa;
-    --accent-strong: #c4b5fd;
-    --accent-soft: #2e2a4d;
-    --accent-soft-hover: #37325c;
-    --nav-active: #2a2a3a;
-    --star: #fbbf24;
-    --star-soft: #3a2f10;
-    --danger: #f87171;
-    --danger-soft: #3a1d1d;
-    --shadow-window: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px -8px rgba(0, 0, 0, 0.55);
-    --shadow-lift: 0 8px 24px -6px rgba(0, 0, 0, 0.6);
-  }
+/* ---- Defaults (no attributes yet): Modern light ---- */
+:root {
+  --bg: #f8fafc;
+  --canvas: #f1f5f9;
+  --surface: #ffffff;
+  --surface-raised: #f1f5f9;
+  --sidebar-bg: #f1f5f9;
+  --text: #0f172a;
+  --text-strong: #020617;
+  --muted: #475569;
+  --muted-strong: #334155;
+  --border: #e2e8f0;
+  --line: #e2e8f0;
+  --line-faint: #f1f5f9;
+  --accent: #4f46e5;
+  --accent-strong: #4338ca;
+  --accent-soft: #eef2ff;
+  --accent-soft-hover: #e0e7ff;
+  --accent-on: #ffffff;
+  --secondary: #4f46e5;
+  --nav-active: #e2e8f0;
+  --star: #ca8a04;
+  --star-soft: #fef3c7;
+  --danger: #dc2626;
+  --danger-soft: #fef2f2;
+  --code-bg: #ffffff;
+  --code-chrome-text: #656d76;
+  --code-chrome-strong: #24292f;
+  --code-chrome-line: #d0d7de;
+  --code-chrome-dot: rgba(0, 0, 0, 0.15);
+  --shadow-window: 0 1px 2px rgba(15, 23, 42, 0.06), 0 12px 32px -8px rgba(15, 23, 42, 0.18);
+  --shadow-lift: 0 8px 24px -6px rgba(15, 23, 42, 0.28);
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --display-tracking: -0.02em;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+}
+
+/* ---- Modern light (explicit) ---- */
+:root[data-style="modern"][data-mode="light"] {
+  --bg: #f8fafc;
+  --canvas: #f1f5f9;
+  --surface: #ffffff;
+  --surface-raised: #f1f5f9;
+  --sidebar-bg: #f1f5f9;
+  --text: #0f172a;
+  --text-strong: #020617;
+  --muted: #475569;
+  --muted-strong: #334155;
+  --border: #e2e8f0;
+  --line: #e2e8f0;
+  --line-faint: #f1f5f9;
+  --accent: #4f46e5;
+  --accent-strong: #4338ca;
+  --accent-soft: #eef2ff;
+  --accent-soft-hover: #e0e7ff;
+  --accent-on: #ffffff;
+  --secondary: #4f46e5;
+  --nav-active: #e2e8f0;
+  --star: #ca8a04;
+  --star-soft: #fef3c7;
+  --danger: #dc2626;
+  --danger-soft: #fef2f2;
+  --code-bg: #ffffff;
+  --code-chrome-text: #656d76;
+  --code-chrome-strong: #24292f;
+  --code-chrome-line: #d0d7de;
+  --code-chrome-dot: rgba(0, 0, 0, 0.15);
+  --shadow-window: 0 1px 2px rgba(15, 23, 42, 0.06), 0 12px 32px -8px rgba(15, 23, 42, 0.18);
+  --shadow-lift: 0 8px 24px -6px rgba(15, 23, 42, 0.28);
+}
+
+/* ---- Modern dark ---- */
+:root[data-style="modern"][data-mode="dark"] {
+  --bg: #0b1220;
+  --canvas: #0b1220;
+  --surface: #111c2e;
+  --surface-raised: #1a2942;
+  --sidebar-bg: #0e1828;
+  --text: #e2e8f0;
+  --text-strong: #f8fafc;
+  --muted: #94a3b8;
+  --muted-strong: #cbd5e1;
+  --border: #1e293b;
+  --line: #1e293b;
+  --line-faint: #16233a;
+  --accent: #818cf8;
+  --accent-strong: #a5b4fc;
+  --accent-soft: #1e1b4b;
+  --accent-soft-hover: #312e81;
+  --accent-on: #1e1b4b;
+  --secondary: #818cf8;
+  --nav-active: #1a2942;
+  --star: #fbbf24;
+  --star-soft: #422006;
+  --danger: #f87171;
+  --danger-soft: #450a0a;
+  --code-bg: #0d1117;
+  --code-chrome-text: #8b949e;
+  --code-chrome-strong: #c9d1d9;
+  --code-chrome-line: rgba(255, 255, 255, 0.08);
+  --code-chrome-dot: rgba(255, 255, 255, 0.18);
+  --shadow-window: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px -8px rgba(0, 0, 0, 0.55);
+  --shadow-lift: 0 8px 24px -6px rgba(0, 0, 0, 0.6);
+}
+
+/* ---- Achaemenid light: sandstone, gold primary, lapis secondary ---- */
+:root[data-style="achaemenid"][data-mode="light"] {
+  --bg: #f5efe3;
+  --canvas: #efe7d3;
+  --surface: #fffdf6;
+  --surface-raised: #fbf6ea;
+  --sidebar-bg: #f3ecdb;
+  --text: #2b2118;
+  --text-strong: #1d150c;
+  --muted: #7a6a55;
+  --muted-strong: #5c4f3d;
+  --border: #d9c9a8;
+  --line: #d9c9a8;
+  --line-faint: #e9dfc8;
+  --accent: var(--gold-600);
+  --accent-strong: var(--gold-700);
+  --accent-soft: #f7efda;
+  --accent-soft-hover: #f1e3bd;
+  --accent-on: var(--gold-950);
+  --secondary: var(--lapis-900);
+  --nav-active: #efe6cf;
+  --star: #a16207;
+  --star-soft: #fef3c7;
+  --danger: #b91c1c;
+  --danger-soft: #fef2f2;
+  --code-bg: #fbebd4;
+  --code-chrome-text: #7a5c2e;
+  --code-chrome-strong: #4a3413;
+  --code-chrome-line: #e0cfa8;
+  --code-chrome-dot: rgba(122, 92, 46, 0.35);
+  --shadow-window: 0 1px 2px rgba(43, 33, 24, 0.08), 0 12px 32px -8px rgba(43, 33, 24, 0.22);
+  --shadow-lift: 0 8px 24px -6px rgba(43, 33, 24, 0.32);
+}
+
+/* ---- Achaemenid dark: basalt, gold primary, lapis secondary ---- */
+:root[data-style="achaemenid"][data-mode="dark"] {
+  --bg: #171310;
+  --canvas: #14100d;
+  --surface: #221b15;
+  --surface-raised: #2c241b;
+  --sidebar-bg: #1d1712;
+  --text: #ece0c8;
+  --text-strong: #f7efdd;
+  --muted: #a89880;
+  --muted-strong: #cfc0a4;
+  --border: #3d3226;
+  --line: #3d3226;
+  --line-faint: #2e261c;
+  --accent: var(--gold-400);
+  --accent-strong: var(--gold-300);
+  --accent-soft: #332a17;
+  --accent-soft-hover: #453a20;
+  --accent-on: var(--gold-950);
+  --secondary: var(--lapis-400);
+  --nav-active: #2c241b;
+  --star: #fbbf24;
+  --star-soft: #3a2f10;
+  --danger: #f87171;
+  --danger-soft: #450a0a;
+  --code-bg: #1c1d21;
+  --code-chrome-text: #9a8b6f;
+  --code-chrome-strong: #d8cdb4;
+  --code-chrome-line: rgba(236, 224, 200, 0.12);
+  --code-chrome-dot: rgba(236, 224, 200, 0.25);
+  --shadow-window: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px -8px rgba(0, 0, 0, 0.55);
+  --shadow-lift: 0 8px 24px -6px rgba(0, 0, 0, 0.6);
+}
+
+/* ---- Per-style type + radius ---- */
+:root[data-style="modern"] {
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --display-tracking: -0.02em;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+}
+
+:root[data-style="achaemenid"] {
+  --font-body: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-display: 'Cinzel', Georgia, 'Times New Roman', serif;
+  --display-tracking: 0.05em;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
 }
 
 * {

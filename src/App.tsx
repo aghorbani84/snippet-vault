@@ -15,9 +15,12 @@ import { LANGUAGES, createSnippet } from './types';
 import { SEED_SNIPPETS } from './data/seed';
 import { filterSnippets } from './lib/filter';
 import { LANGUAGE_COLORS } from './lib/languageColors';
+import { applyHljsTheme } from './lib/hljsThemes';
+import { useTheme } from './lib/theme';
 import SnippetRow from './components/SnippetRow';
 import SnippetDetail from './components/SnippetDetail';
 import SnippetForm, { type SnippetFormValues } from './components/SnippetForm';
+import ThemeSwitcher from './components/ThemeSwitcher';
 import styles from './App.module.css';
 
 const STORAGE_KEY = 'snippet-vault:snippets:v1';
@@ -43,6 +46,7 @@ function parseTags(input: string): string[] {
 }
 
 export default function App() {
+  const { theme, setStyle, toggleMode } = useTheme();
   const [snippets, setSnippets] = useState<Snippet[]>(loadSnippets);
   const [query, setQuery] = useState('');
   const [language, setLanguage] = useState<string>('All');
@@ -56,6 +60,11 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(snippets));
   }, [snippets]);
+
+  // Swap the highlight.js theme whenever the style/mode combination changes.
+  useEffect(() => {
+    applyHljsTheme(theme);
+  }, [theme]);
 
   const visibleSnippets = useMemo(
     () => filterSnippets(snippets, query, language, favoritesOnly),
@@ -205,12 +214,46 @@ export default function App() {
           <span />
           <span />
         </span>
+        {theme.style === 'achaemenid' && (
+          <svg
+            className={styles.faravahar}
+            viewBox="0 0 32 24"
+            width="30"
+            height="22"
+            aria-hidden
+          >
+            <g fill="currentColor">
+              <circle cx="16" cy="8" r="2.6" />
+              <path d="M13.5 6.5 3 2.5l1.6 4.4 8.9 1.1z" />
+              <path d="M13.5 9.5 4.6 8.4l2 4 6.9.6z" />
+              <path d="M18.5 6.5 29 2.5l-1.6 4.4-8.9 1.1z" />
+              <path d="M18.5 9.5l8.9-1.1-2 4-6.9.6z" />
+              <path d="M16 11.5 13.5 21l2.5-1.8L18.5 21z" />
+            </g>
+            <circle
+              cx="16"
+              cy="8"
+              r="4.4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1"
+            />
+          </svg>
+        )}
         <h1 className={styles.windowTitle}>Snippet Vault</h1>
+        <ThemeSwitcher
+          theme={theme}
+          onStyleChange={setStyle}
+          onToggleMode={toggleMode}
+        />
         <span className={styles.chromeStats}>
           <strong>{snippets.length}</strong> snippets ·{' '}
           <strong>{favoriteCount}</strong> favorites
         </span>
       </header>
+      {theme.style === 'achaemenid' && (
+        <div className={styles.doubleRule} aria-hidden />
+      )}
 
       <div className={styles.body}>
         <aside className={styles.sidebar} aria-label="Library">
