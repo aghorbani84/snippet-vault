@@ -1,65 +1,75 @@
 # Snippet Vault
 
-A code snippet manager built with React + TypeScript (Vite). Save the code you
-keep coming back to, find it instantly, and take it with you as JSON.
+**A fast, local-first code snippet manager with syntax highlighting, tags, search, and JSON import/export.**
+
+[![Live demo](https://img.shields.io/badge/demo-GitHub%20Pages-2ea44f)](https://aghorbani84.github.io/snippet-vault/)
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
+[![GitHub stars](https://img.shields.io/github/stars/aghorbani84/snippet-vault?style=flat)](https://github.com/aghorbani84/snippet-vault/stargazers)
+
+**Live demo:** https://aghorbani84.github.io/snippet-vault/
+
+## Overview
+
+Snippet Vault keeps the code you reuse in one searchable place. Snippets live in your browser's
+`localStorage`; there is no backend and no account. Export to JSON whenever you want a backup.
 
 ## Features
 
-- **Create, edit and delete snippets** — title, language, code, description and tags
-- **Syntax highlighting** powered by [highlight.js](https://highlightjs.org/)
-  (github-dark theme), for JavaScript, TypeScript, Python, CSS, Bash, SQL and HTML
-- **Full-text search** across title, code, description and tags (multi-word)
-- **Filter by language** and a favorites-only toggle
-- **Favorites** — star the snippets you use most
-- **Copy to clipboard** with a fallback for non-secure contexts
-- **Export all snippets as JSON** and **import JSON** back (validated, bad files rejected)
-- **localStorage persistence** — everything is stored in your browser, no server, no account
-- **8 genuinely useful seed snippets** on first run: a TypeScript debounce, fetch
-  with timeout, a Python quicksort, a scroll throttle, a deep clone, a CSS centering
-  trick, an async retry with exponential backoff, and a Bash find command
+- **Create, edit, and delete snippets** with a title, language, code, description, and tags.
+- **Syntax highlighting** via highlight.js for JavaScript, TypeScript, Python, CSS, Bash, SQL, and HTML, with a code theme matched to the app theme.
+- **Multi-word search** across title, code, description, and tags.
+- **Filters** by language and a favorites-only view.
+- **Copy to clipboard**, with a fallback for non-secure contexts.
+- **JSON export and import**; invalid files are rejected.
+- **Seed snippets** on first run (debounce, fetch with timeout, retry with backoff, and more).
+- **Themes**: Achaemenid and Modern styles, each in light and dark.
 
-## Tech used
+## Tech stack
 
-- React 19 + TypeScript + Vite
-- State: plain React `useState` + `useMemo` (no state library)
-- Highlighting: `highlight.js`
-- Styling: CSS Modules (plus a small global stylesheet)
-- Data: `localStorage` only — no API, no keys, no backend
+| Area | Choice |
+| --- | --- |
+| UI | React 19, TypeScript |
+| Build | Vite 8 |
+| State | React `useState` / `useMemo` |
+| Highlighting | highlight.js |
+| Styling | CSS Modules |
+| Icons | lucide-react |
+| Deploy | GitHub Actions → GitHub Pages |
 
-## How to run
+## Getting started
+
+Requires Node.js 20 or newer and npm.
 
 ```bash
+git clone https://github.com/aghorbani84/snippet-vault.git
+cd snippet-vault
 npm install
-npm run dev
+npm run dev        # http://localhost:5173/snippet-vault/
 ```
 
-Then open the URL Vite prints (usually http://localhost:5173).
-
-## Scripts
-
-| Command           | What it does                              |
-| ----------------- | ----------------------------------------- |
-| `npm run dev`     | Start the development server              |
-| `npm run build`   | Typecheck (`tsc -b`) and build for production |
-| `npm run preview` | Serve the production build locally        |
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Start the Vite dev server |
+| `npm run build` | Type-check and build into `dist/` |
+| `npm run preview` | Serve the production build locally |
+| `npm run lint` | Lint with oxlint |
 
 ## Project structure
 
 ```
 src/
-  App.tsx                  # Main shell: state, search/filter, import/export
-  types.ts                 # Snippet type + factory
-  data/seed.ts             # 8 real, working seed snippets
-  lib/filter.ts            # Pure search/filter function
-  components/
-    CodeBlock.tsx          # highlight.js rendering
-    SnippetCard.tsx        # Card: meta, tags, copy, edit, delete, favorite
-    SnippetForm.tsx        # Create/edit form with validation
-    *.module.css           # CSS Modules for each component
+  App.tsx            shell: state, search and filters, import/export
+  types.ts           Snippet type and supported languages
+  data/seed.ts       first-run seed snippets
+  lib/               filter.ts, theme.ts, hljsThemes.ts, languageColors.ts
+  components/        SnippetRow, SnippetDetail, SnippetForm, CodeBlock, ThemeSwitcher (+ .module.css)
+.github/workflows/   GitHub Pages deploy
 ```
 
-## Data & privacy
+Data is stored under the `snippet-vault:snippets:v1` key and never leaves the browser.
 
-Snippets live only in your browser under the `snippet-vault:snippets:v1`
-localStorage key. Use **Export JSON** to back them up; **Import JSON** restores
-them. Nothing is ever sent to a server.
+## Author
+
+Built by [Abolfazl Ghorbani](https://github.com/aghorbani84).
